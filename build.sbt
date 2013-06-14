@@ -1,7 +1,7 @@
 sbtPlugin := true
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.9.3"
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-language:_")
+scalacOptions ++= Seq("-deprecation", "-unchecked")
 
 offline := false
