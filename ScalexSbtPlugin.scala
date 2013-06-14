@@ -26,25 +26,19 @@ object ScalexSbtPlugin extends Plugin {
     val hasJava = srcs.exists(_.name.endsWith(".java"))
     val cp = Attributed.data(depCP).toList
     val label = Defaults.nameForSrc(config.name)
-    val (options, runDoc) =
-      // if(hasScala)
+    val compiler = cs.scalac
+    val (options, runIndex) =
         (sOpts ++ Opts.doc.externalAPI(xapis), // can't put the .value calls directly here until 2.10.2
-          compile(label, new ScalexCompiler(cs.scalac)))
-      // else if(hasJava)
-      //   (jOpts,
-      //     Doc.javadoc(label, s.cacheDirectory / "java", cs.javac.onArgs(exported(s, "javadoc"))))
-      // else
-        // (Nil, RawCompileLike.nop)
-    runDoc(srcs, cp, out, options, maxE, s.log)
+          compile(label, new ScalexCompiler(compiler, exported(s, "scalex-gen"))))
+    runIndex(srcs, cp, out, options, maxE, s.log)
     out
   }
 
   private def compile(label: String, compiler: ScalexCompiler): RawCompileLike.Gen = 
     RawCompileLike.prepare(label + " Scalex database", compiler.index)
 
-  private[this] def exported(w: PrintWriter, command: String): Seq[String] => Unit = args => 
-    w.println( (command +: args).mkString(" ") )
-
-	private[this] def exported(s: TaskStreams, command: String): Seq[String] => Unit = args =>
-		exported(s.text("export"), command)
+	private[this] def exported(s: TaskStreams, command: String): Seq[String] => String = args => {
+    println( (command +: args).mkString(" ") )
+    (command +: args).mkString(" ") 
+  }
 }

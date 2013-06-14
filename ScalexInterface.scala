@@ -1,7 +1,7 @@
 package ornicar.scalex_sbt
 
-import xsbt.Log, Log.debug
-import xsbt.Command
+import xsbt.Log
+import xsbt.{ Command, InterfaceCompileFailed }
 import xsbti.{ Logger, Problem }
 
 /**
@@ -21,11 +21,9 @@ private class Runner(args: Array[String], log: Logger, delegate: xsbti.Reporter)
   val reporter = DelegatingReporter(docSettings, delegate)
   def noErrors = !reporter.hasErrors && command.ok
 
-  class InterfaceCompileFailed(val arguments: Array[String], val problems: Array[Problem], override val toString: String) extends xsbti.CompileFailed
-
   import forScope._
   def run() {
-    debug(log, "Calling Scaladoc with arguments:\n\t" + args.mkString("\n\t"))
+    Log.debug(log, "Calling Scaladoc with arguments:\n\t" + args.mkString("\n\t"))
     if (noErrors) {
       import doc._ // 2.8 trunk and Beta1-RC4 have doc.DocFactory.  For other Scala versions, the next line creates forScope.DocFactory
       val processor = new DocFactory(reporter, docSettings)
