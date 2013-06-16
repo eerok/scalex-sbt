@@ -12,28 +12,34 @@ import xsbti.Reporter
  * compile/src/main/scala/sbt/compiler/AnalyzingCompiler.scala
  * some private functions had to be pasted
  */
-private[scalex_sbt] final class ScalexCompiler(compiler: AnalyzingCompiler, onArgsF: Seq[String] => String) {
+private[scalex_sbt] final class ScalexCompiler(
+  compiler: AnalyzingCompiler, 
+  onArgsF: Seq[String] => String) {
 
   def index(
     sources: Seq[File],
     classpath: Seq[File],
     outputDirectory: File,
+    outputFile: File,
     options: Seq[String],
     maximumErrors: Int,
     log: Logger) {
-    index(sources, classpath, outputDirectory, options, log, new LoggerReporter(maximumErrors, log))
+    index(sources, classpath, outputDirectory, outputFile, options, log, new LoggerReporter(maximumErrors, log))
   }
 
   def index(
     sources: Seq[File],
     classpath: Seq[File],
     outputDirectory: File,
+    outputFile: File,
     options: Seq[String],
     log: Logger,
     reporter: Reporter) {
     val compArgs = new CompilerArguments(compiler.scalaInstance, compiler.cp)
-    val arguments = compArgs(sources, classpath, outputDirectory, options)
+    val outputOption = Seq("-output-file", outputFile.getAbsolutePath)
+    val arguments = outputOption ++ compArgs(sources, classpath, outputDirectory, options) 
     val command = onArgsF(arguments)
+    println("Run " + command.take(70) + "...")
     Process(command) ! log
     // val className = "xsbt.ScaladocInterface"
     // val className = "ornicar.scalex_sbt.ScalexInterface"
