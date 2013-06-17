@@ -17,30 +17,34 @@ private[scalex_sbt] final class ScalexCompiler(
   onArgsF: Seq[String] => String) {
 
   def index(
+    name: String,
+    version: String,
     sources: Seq[File],
     classpath: Seq[File],
     outputDirectory: File,
-    outputFile: File,
     options: Seq[String],
     maximumErrors: Int,
-    log: Logger) {
-    index(sources, classpath, outputDirectory, outputFile, options, log, new LoggerReporter(maximumErrors, log))
-  }
+    log: Logger): File =
+    index(name, version, sources, classpath, outputDirectory, options, log, new LoggerReporter(maximumErrors, log))
 
   def index(
+    name: String,
+    version: String,
     sources: Seq[File],
     classpath: Seq[File],
     outputDirectory: File,
-    outputFile: File,
     options: Seq[String],
     log: Logger,
-    reporter: Reporter) {
+    reporter: Reporter): File = {
     val compArgs = new CompilerArguments(compiler.scalaInstance, compiler.cp)
-    val outputOption = Seq("-output-file", outputFile.getAbsolutePath)
-    val arguments = outputOption ++ compArgs(sources, classpath, outputDirectory, options) 
+    val outputFile = new File("%s/%s_%s.scalex".format(outputDirectory.getAbsolutePath, name, version))
+    val outputOptions = Seq("-output-file", outputFile.getAbsolutePath)
+    val projectOptions = Seq(name, version)
+    val arguments = projectOptions ++ outputOptions ++ compArgs(sources, classpath, outputDirectory, options) 
     val command = onArgsF(arguments)
     println("Run " + command.take(70) + "...")
     Process(command) ! log
+    outputFile
     // val className = "xsbt.ScaladocInterface"
     // val className = "ornicar.scalex_sbt.ScalexInterface"
     // call(className, "run", log)(classOf[Array[String]], classOf[xLogger], classOf[Reporter])(

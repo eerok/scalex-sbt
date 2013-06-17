@@ -11,6 +11,8 @@ object ScalexSbtPlugin extends Plugin {
 
   import java.io.{ File, PrintWriter }
   def scalexTask = scalexTaskKey <<= (
+    name,
+    version,
     configuration in Compile,
     dependencyClasspath in Compile,
     streams in Compile,
@@ -20,16 +22,14 @@ object ScalexSbtPlugin extends Plugin {
     scalacOptions in Compile,
     javacOptions in Compile,
     maxErrors in Compile) map {
-      (config, depCP, s, cs, srcs, out, sOpts, jOpts, maxE) ⇒
+      (projectName, projectVersion, config, depCP, s, cs, srcs, out, sOpts, jOpts, maxE) ⇒
         val hasScala = srcs.exists(_.name.endsWith(".scala"))
         val hasJava = srcs.exists(_.name.endsWith(".java"))
         val cp = depCP.map(_.data).toList
         val label = Defaults.nameForSrc(config.name)
         val scalexCommand = "/home/thib/scalex/scalex index"
         val compiler = new ScalexCompiler(cs.scalac, exported(s, scalexCommand))
-        val outputFile = new File(out.getAbsolutePath + "/database.scalex")
-        compiler.index(srcs, cp, out, outputFile, sOpts, maxE, s.log)
-        outputFile
+        compiler.index(projectName, projectVersion, srcs, cp, out, sOpts, maxE, s.log)
     }
 
   // private def compile(label: String, compiler: ScalexCompiler): RawCompileLike.Gen = 
