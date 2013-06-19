@@ -1,4 +1,4 @@
-package ornicar.scalex_sbt
+package org.scalex.sbt_plugin
 
 import sbt._, Keys._
 import sbt.compiler.AnalyzingCompiler
@@ -27,7 +27,7 @@ object ScalexSbtPlugin extends Plugin {
         val hasJava = srcs.exists(_.name.endsWith(".java"))
         val cp = depCP.map(_.data).toList
         val label = Defaults.nameForSrc(config.name)
-        val scalexCommand = "/home/thib/scalex/scalex index"
+        val scalexCommand = "/home/thib/scalex/scalex-run index"
         val compiler = new ScalexCompiler(cs.scalac, exported(s, scalexCommand))
         compiler.index(projectName, projectVersion, srcs, cp, out, sOpts, maxE, s.log)
     }

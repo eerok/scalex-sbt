@@ -1,4 +1,4 @@
-package ornicar.scalex_sbt
+package org.scalex.sbt_plugin
 
 import java.io.File
 import java.net.{ URL, URLClassLoader }
@@ -12,7 +12,7 @@ import xsbti.Reporter
  * compile/src/main/scala/sbt/compiler/AnalyzingCompiler.scala
  * some private functions had to be pasted
  */
-private[scalex_sbt] final class ScalexCompiler(
+private[sbt_plugin] final class ScalexCompiler(
   compiler: AnalyzingCompiler, 
   onArgsF: Seq[String] => String) {
 
@@ -45,11 +45,5 @@ private[scalex_sbt] final class ScalexCompiler(
     println("Run " + command.take(70) + "...")
     Process(command) ! log
     outputFile
-    // val className = "xsbt.ScaladocInterface"
-    // val className = "ornicar.scalex_sbt.ScalexInterface"
-    // call(className, "run", log)(classOf[Array[String]], classOf[xLogger], classOf[Reporter])(
-    //   arguments.toArray[String], log, reporter)
-    // import ornicar.scalex_sbt.ScalexInterface
-    // (new ScalexInterface).run(arguments.toArray[String], log, reporter)
   }
 }
